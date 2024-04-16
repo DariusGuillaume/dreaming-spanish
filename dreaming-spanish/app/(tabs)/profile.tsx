@@ -1,10 +1,11 @@
+
 import { StyleSheet,Text,View } from "react-native";
 import React from "react";
 
 const Page = () => {
     return (
         <View style={styles.container}>
-        <Text >Profile!</Text>
+        <Text >Profile</Text>
         </View>
     );
     }

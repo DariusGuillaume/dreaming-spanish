@@ -5,7 +5,7 @@ import React from "react";
 const Page = () => {
     return (
         <View style={styles.container}>
-        <Text >Videos</Text>
+        <Text >Progress</Text>
         </View>
     );
     }
