@@ -1,7 +1,15 @@
-import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity, FlatList, Dimensions } from "react-native";
-
-const { width } = Dimensions.get("window");
+import React, { useEffect, useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  SectionList,
+  SafeAreaView,
+  FlatList,
+  Image,
+} from 'react-native';
+import axios from 'axios';
 
 interface Video {
   id: string;
@@ -11,56 +19,118 @@ interface Video {
 }
 
 const LibraryPage = () => {
-  const videos: Video[] = [
-    { id: "1", title: "Video 1", thumbnail: "https://example.com/thumbnail1.jpg", viewedAt: new Date("2023-06-01") },
-    { id: "2", title: "Video 2", thumbnail: "https://example.com/thumbnail2.jpg", viewedAt: new Date("2023-06-02") },
-    { id: "3", title: "Video 3", thumbnail: "https://example.com/thumbnail3.jpg", viewedAt: new Date("2023-06-03") },
-    { id: "4", title: "Video 4", thumbnail: "https://example.com/thumbnail4.jpg", viewedAt: new Date() },
-    { id: "5", title: "Video 5", thumbnail: "https://example.com/thumbnail5.jpg", viewedAt: new Date() },
-    { id: "6", title: "Video 6", thumbnail: "https://example.com/thumbnail6.jpg", viewedAt: new Date() },
-    { id: "7", title: "Video 7", thumbnail: "https://example.com/thumbnail7.jpg", viewedAt: new Date() },
-    { id: "8", title: "Video 8", thumbnail: "https://example.com/thumbnail8.jpg", viewedAt: new Date() },
-  ];
+  const [watchLaterVideos, setWatchLaterVideos] = useState<Video[]>([]);
+  const [historyVideos, setHistoryVideos] = useState<Video[]>([]);
 
-  // Sort videos based on viewedAt date in descending order
-  const sortedVideos = videos.sort((a, b) => b.viewedAt.getTime() - a.viewedAt.getTime());
+  useEffect(() => {
+    const fetchWatchLaterVideos = async () => {
+      try {
+        const response = await axios.get(
+          'https://www.googleapis.com/youtube/v3/playlistItems',
+          {
+            params: {
+              part: 'snippet',
+              maxResults: 10,
+              playlistId: 'YOUR_WATCH_LATER_PLAYLIST_ID',
+              key: 'YOUR_API_KEY',
+            },
+          }
+        );
+
+        const fetchedVideos: Video[] = response.data.items.map((item: any) => ({
+          id: item.snippet.resourceId.videoId,
+          title: item.snippet.title,
+          thumbnail: item.snippet.thumbnails.medium.url,
+          viewedAt: new Date(),
+        }));
+
+        setWatchLaterVideos(fetchedVideos);
+      } catch (error) {
+        console.error('Error fetching watch later videos:', error);
+      }
+    };
+
+    const fetchHistoryVideos = async () => {
+      try {
+        const response = await axios.get(
+          'https://www.googleapis.com/youtube/v3/playlistItems',
+          {
+            params: {
+              part: 'snippet',
+              maxResults: 10,
+              playlistId: 'YOUR_HISTORY_PLAYLIST_ID',
+              key: 'YOUR_API_KEY',
+            },
+          }
+        );
+
+        const fetchedVideos: Video[] = response.data.items.map((item: any) => ({
+          id: item.snippet.resourceId.videoId,
+          title: item.snippet.title,
+          thumbnail: item.snippet.thumbnails.medium.url,
+          viewedAt: new Date(),
+        }));
+
+        setHistoryVideos(fetchedVideos);
+      } catch (error) {
+        console.error('Error fetching history videos:', error);
+      }
+    };
+
+    fetchWatchLaterVideos();
+    fetchHistoryVideos();
+  }, []);
+
+  const SECTIONS = [
+    {
+      title: 'Watch Later',
+      horizontal: true,
+      data: watchLaterVideos,
+    },
+    {
+      title: 'History',
+      horizontal: true,
+      data: historyVideos,
+    },
+  ];
 
   const renderVideoItem = ({ item }: { item: Video }) => (
     <TouchableOpacity style={styles.videoItem}>
-      <View style={styles.thumbnailContainer}>
-        {/* thumbnail */}
-        <View style={styles.thumbnail} />
-      </View>
+      <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} />
       <Text style={styles.videoTitle}>{item.title}</Text>
     </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.pageTitle}>Library</Text>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>History</Text>
-        <FlatList
-          data={sortedVideos}
-          renderItem={renderVideoItem}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.videoSlider}
-        />
-      </View>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Watch Later</Text>
-        <FlatList
-          data={videos}
-          renderItem={renderVideoItem}
-          keyExtractor={(item) => item.id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.videoSlider}
-        />
-      </View>
-    </View>
+      <SectionList
+        contentContainerStyle={{ paddingHorizontal: 10 }}
+        stickySectionHeadersEnabled={false}
+        sections={SECTIONS}
+        renderSectionHeader={({ section }) => (
+          <>
+            <Text style={styles.sectionTitle}>{section.title}</Text>
+            {section.horizontal ? (
+              <FlatList
+                horizontal
+                data={section.data}
+                renderItem={renderVideoItem}
+                keyExtractor={(item) => item.id}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingHorizontal: 10 }}
+              />
+            ) : null}
+          </>
+        )}
+        renderItem={({ item, section }) => {
+          if (section.horizontal) {
+            return null;
+          }
+          return renderVideoItem({ item });
+        }}
+      />
+    </SafeAreaView>
   );
 };
 
@@ -69,38 +139,26 @@ export default LibraryPage;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5FCFF",
+    backgroundColor: '#F5FCFF',
     padding: 10,
   },
   pageTitle: {
     fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  section: {
-    flex: 1,
+    fontWeight: 'bold',
     marginBottom: 20,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 10,
   },
-  videoSlider: {
-    paddingVertical: 10,
-  },
   videoItem: {
-    width: width * 0.4, 
-    marginRight: 10,
-  },
-  thumbnailContainer: {
-    width: "100%", 
-    height: 120,
-    marginBottom: 5,
+    margin: 10,
   },
   thumbnail: {
-    flex: 1,
-    backgroundColor: "#ccc",
+    width: 200,
+    height: 120,
+    marginBottom: 5,
   },
   videoTitle: {
     fontSize: 14,

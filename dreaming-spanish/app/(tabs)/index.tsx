@@ -1,12 +1,73 @@
-import { StyleSheet, Text, TouchableOpacity, View, Image } from "react-native";
-import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View, Image, FlatList } from "react-native";
+import React, { useEffect, useState } from "react";
 import { Stack } from "expo-router";
+import axios from "axios";
+
+interface Video {
+  id: string;
+  title: string;
+  thumbnail: string;
+  viewedAt: Date;
+}
+
+const Categories = () => {
+  const categories = ['Category 1', 'Category 2', 'Category 3', 'Category 4'];
+
+  return (
+    <View style={styles.categoriesContainer}>
+      {categories.map((category) => (
+        <TouchableOpacity key={category} style={styles.categoryButton}>
+          <Text style={styles.categoryText}>{category}</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+};
 
 const Page = () => {
+  const [videos, setVideos] = useState<Video[]>([]);
   const minutesWatched = 20; // Replace with actual minutes watched
   const maxDailyGoal = 60; // Replace with actual maximum daily goal
-
   const progressPercentage = (minutesWatched / maxDailyGoal) * 100;
+
+  useEffect(() => {
+    const fetchVideos = async () => {
+      try {
+        const response = await axios.get(
+          "https://www.googleapis.com/youtube/v3/search",
+          {
+            params: {
+              part: "snippet",
+              maxResults: 10,
+              channelId: "UCQZlXrjP8_5YlUx0sevTX9w",
+              type: "video",
+              key: "YOUR_API_KEY",
+            },
+          }
+        );
+
+        const fetchedVideos: Video[] = response.data.items.map((item: any) => ({
+          id: item.id.videoId,
+          title: item.snippet.title,
+          thumbnail: item.snippet.thumbnails.medium.url,
+          viewedAt: new Date(),
+        }));
+
+        setVideos(fetchedVideos);
+      } catch (error) {
+        console.error("Error fetching videos:", error);
+      }
+    };
+
+    fetchVideos();
+  }, []);
+
+  const renderVideoItem = ({ item }: { item: Video }) => (
+    <TouchableOpacity style={styles.videoItem}>
+      <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} />
+      <Text style={styles.videoTitle}>{item.title}</Text>
+    </TouchableOpacity>
+  );
 
   return (
     <Stack.Screen
@@ -22,35 +83,55 @@ const Page = () => {
           </TouchableOpacity>
         ),
         headerRight: () => (
-          <View style={styles.progressContainer}>
-            <View style={styles.progressTextContainer}>
-              <Text style={styles.progressText}>
-                Watched: <Text style={styles.boldText}>{minutesWatched} min</Text>
-              </Text>
-              <Text style={styles.progressText}>
-                Daily goal: <Text style={styles.boldText}>{maxDailyGoal} min</Text>
-              </Text>
-            </View>
-            <View style={styles.progressBarContainer}>
-              <View style={styles.progressBar}>
-                <View
-                  style={[
-                    styles.progressFill,
-                    { width: `${progressPercentage}%` },
-                  ]}
-                />
+          <View style={styles.progressWrapper}>
+            <View style={styles.progressContainer}>
+              <View style={styles.progressTextContainer}>
+                <Text style={styles.progressText}>
+                  Watched: <Text style={styles.boldText}>{minutesWatched} min</Text>
+                </Text>
+                <Text style={styles.progressText}>
+                  Daily goal: <Text style={styles.boldText}>{maxDailyGoal} min</Text>
+                </Text>
+              </View>
+              <View style={styles.progressBarContainer}>
+                <View style={styles.progressBar}>
+                  <View
+                    style={[
+                      styles.progressFill,
+                      { width: `${progressPercentage}%` },
+                    ]}
+                  />
+                </View>
               </View>
             </View>
           </View>
         ),
       }}
-    />
+    >
+      <View style={styles.container}>
+        <Categories />
+        <FlatList
+          data={videos}
+          renderItem={renderVideoItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.videoList}
+        />
+      </View>
+    </Stack.Screen>
   );
 };
 
 export default Page;
 
 const styles = StyleSheet.create({
+  progressWrapper: {
+    height: 100, // Adjust the height as needed to accommodate the progress text and bar
+    justifyContent: 'center',
+  },
+  progressContainer: {
+    marginRight: 40, // Adjust this value to move the progress bar horizontally
+    marginTop: 95, // Adjust this value to move the progress bar vertically
+  },
   container: {
     flex: 1,
     justifyContent: "center",
@@ -66,10 +147,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 10,
   },
-  progressContainer: {
-    marginRight: 20,
-    marginTop: 10,
-  },
+
   progressTextContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -96,5 +174,39 @@ const styles = StyleSheet.create({
   progressFill: {
     height: "100%",
     backgroundColor: "#FF6400",
+  },
+  videoList: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  videoItem: {
+    marginBottom: 16,
+  },
+  thumbnail: {
+    width: "100%",
+    height: 200,
+    resizeMode: "cover",
+    borderRadius: 8,
+  },
+  videoTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 8,
+  },
+  categoriesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    marginTop: 16,
+  },
+  categoryButton: {
+    backgroundColor: '#E0E0E0',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 16,
+  },
+  categoryText: {
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });
