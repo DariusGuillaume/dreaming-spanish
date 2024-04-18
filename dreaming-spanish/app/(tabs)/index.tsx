@@ -10,24 +10,10 @@ interface Video {
   viewedAt: Date;
 }
 
-const Categories = () => {
-  const categories = ['Category 1', 'Category 2', 'Category 3', 'Category 4'];
-
-  return (
-    <View style={styles.categoriesContainer}>
-      {categories.map((category) => (
-        <TouchableOpacity key={category} style={styles.categoryButton}>
-          <Text style={styles.categoryText}>{category}</Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  );
-};
-
 const Page = () => {
   const [videos, setVideos] = useState<Video[]>([]);
   const minutesWatched = 20; // Replace with actual minutes watched
-  const maxDailyGoal = 60; // Replace with actual maximum daily goal
+  const maxDailyGoal = 25; // Replace with actual maximum daily goal
   const progressPercentage = (minutesWatched / maxDailyGoal) * 100;
 
   useEffect(() => {
@@ -70,54 +56,54 @@ const Page = () => {
   );
 
   return (
-    <Stack.Screen
-      options={{
-        headerTransparent: true,
-        headerTitle: "",
-        headerLeft: () => (
-          <TouchableOpacity onPress={() => {}} style={styles.headerLeft}>
-            <Image
-              source={require("../../assets/images/home-logo.png")}
-              style={styles.logoImage}
-            />
-          </TouchableOpacity>
-        ),
-        headerRight: () => (
-          <View style={styles.progressWrapper}>
-            <View style={styles.progressContainer}>
-              <View style={styles.progressTextContainer}>
-                <Text style={styles.progressText}>
-                  Watched: <Text style={styles.boldText}>{minutesWatched} min</Text>
-                </Text>
-                <Text style={styles.progressText}>
-                  Daily goal: <Text style={styles.boldText}>{maxDailyGoal} min</Text>
-                </Text>
-              </View>
-              <View style={styles.progressBarContainer}>
-                <View style={styles.progressBar}>
-                  <View
-                    style={[
-                      styles.progressFill,
-                      { width: `${progressPercentage}%` },
-                    ]}
-                  />
+    <View style={styles.container}>
+      <Stack.Screen
+        options={{
+          headerTransparent: true,
+          headerTitle: "",
+          headerLeft: () => (
+            <TouchableOpacity onPress={() => {}} style={styles.headerLeft}>
+              <Image
+                source={require("../../assets/images/home-logo.png")}
+                style={styles.logoImage}
+              />
+            </TouchableOpacity>
+          ),
+          headerRight: () => (
+            <View style={styles.progressWrapper}>
+              <View style={styles.progressContainer}>
+                <View style={styles.progressTextContainer}>
+                  <Text style={styles.progressText}>
+                    Watched: <Text style={styles.boldText}>{minutesWatched} min</Text>
+                  </Text>
+                  <Text style={styles.progressText}>
+                    Daily goal: <Text style={styles.boldText}>{maxDailyGoal} min</Text>
+                  </Text>
+                </View>
+                <View style={styles.progressBarContainer}>
+                  <View style={styles.progressBar}>
+                    <View
+                      style={[
+                        styles.progressFill,
+                        { width: `${progressPercentage}%` },
+                      ]}
+                    />
+                  </View>
                 </View>
               </View>
             </View>
-          </View>
-        ),
-      }}
-    >
-      <View style={styles.container}>
-        <Categories />
+          ),
+        }}
+      >
         <FlatList
           data={videos}
           renderItem={renderVideoItem}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.videoList}
         />
-      </View>
-    </Stack.Screen>
+      </Stack.Screen>
+      <Text style={styles.categoriesTitle}>Categories</Text>
+    </View>
   );
 };
 
@@ -193,20 +179,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 8,
   },
-  categoriesContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    marginTop: 16,
-  },
-  categoryButton: {
-    backgroundColor: '#E0E0E0',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 16,
-  },
-  categoryText: {
-    fontSize: 14,
+  categoriesTitle: {
+    fontSize: 24,
     fontWeight: 'bold',
+    marginTop: -375, // Increase the marginTop value to provide more spacing
+   
   },
 });
