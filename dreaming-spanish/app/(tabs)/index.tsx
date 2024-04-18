@@ -105,25 +105,25 @@ const Page = () => {
       </Stack.Screen>
       <View style={styles.categoriesContainer}>
         <View style={styles.bubbleContainer}>
-          <TouchableOpacity style={styles.bubble}>
-            <Ionicons name="fitness" size={20} color="#FF6400" />
-            <Text style={styles.bubbleText}>Super Beg.</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.bubble}>
-            <Ionicons name="body" size={20} color="#FF6400" />
-            <Text style={styles.bubbleText}>Beginner</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.bubble}>
-            <Ionicons name="barbell" size={20} color="#FF6400" />
-            <Text style={styles.bubbleText}>Interm.</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.bubble}>
-            <Ionicons name="trophy" size={20} color="#FF6400" />
-            <Text style={styles.bubbleText}>Advanced</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.optionsBubble}>
-            <Ionicons name="options" size={32} color="#000000" />
-          </TouchableOpacity>
+        <TouchableOpacity style={styles.bubble}>
+  <Ionicons name="school" size={20} color="#FF6400" />
+  <Text style={styles.bubbleText}>Super Beg.</Text>
+</TouchableOpacity>
+<TouchableOpacity style={styles.bubble}>
+  <Ionicons name="book" size={20} color="#FF6400" />
+  <Text style={styles.bubbleText}>Beginner</Text>
+</TouchableOpacity>
+<TouchableOpacity style={styles.bubble}>
+  <Ionicons name="star" size={20} color="#FF6400" />
+  <Text style={styles.bubbleText}>Interm.</Text>
+</TouchableOpacity>
+<TouchableOpacity style={styles.bubble}>
+  <Ionicons name="trophy" size={20} color="#FF6400" />
+  <Text style={styles.bubbleText}>Advanced</Text>
+</TouchableOpacity>
+<TouchableOpacity style={styles.optionsBubble}>
+  <Ionicons name="options" size={32} color="#000000" />
+</TouchableOpacity>
         </View>
       </View>
     </View>
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
   },
   categoriesContainer: {
     alignItems: 'center',
-    marginTop: -100,
+    marginTop: -350,
   },
   bubbleContainer: {
     flexDirection: 'row',
