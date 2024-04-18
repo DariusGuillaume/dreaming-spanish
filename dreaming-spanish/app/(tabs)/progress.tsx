@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, TextInput } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, TextInput, Alert } from "react-native";
 import ProgressCircle from "../ProgressCircle";
 
 interface GoalMenuProps {
@@ -10,27 +10,48 @@ interface GoalMenuProps {
 
 const GoalMenu: React.FC<GoalMenuProps> = ({ visible, onClose, onGoalChange }) => {
   const [customGoal, setCustomGoal] = useState("");
+  const [selectedGoal, setSelectedGoal] = useState(0);
 
   if (!visible) return null;
 
   const handleGoalChange = (goal: number) => {
+    if (goal > 1440) {
+      Alert.alert("Error", "The goal cannot exceed the number of minutes in a day (1440 minutes).");
+      return;
+    }
+    setSelectedGoal(goal);
     onGoalChange(goal);
     onClose();
   };
 
   return (
     <View style={styles.goalMenu}>
-      <TouchableOpacity style={styles.goalOption} onPress={() => handleGoalChange(15)}>
+      <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+        <Text style={styles.closeButtonText}>×</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.goalOption, selectedGoal === 15 && styles.selectedGoalOption]}
+        onPress={() => handleGoalChange(15)}
+      >
+        <View style={[styles.selector, selectedGoal === 15 && styles.selectedSelector]} />
         <Text style={styles.goalOptionTitle}>Casual</Text>
         <Text style={styles.goalOptionSubtitle}>Keeping your skills fresh</Text>
         <Text style={styles.goalOptionValue}>15 min/day</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.goalOption} onPress={() => handleGoalChange(30)}>
+      <TouchableOpacity
+        style={[styles.goalOption, selectedGoal === 30 && styles.selectedGoalOption]}
+        onPress={() => handleGoalChange(30)}
+      >
+        <View style={[styles.selector, selectedGoal === 30 && styles.selectedSelector]} />
         <Text style={styles.goalOptionTitle}>Learner</Text>
         <Text style={styles.goalOptionSubtitle}>Making progress every day</Text>
         <Text style={styles.goalOptionValue}>30 min/day</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.goalOption} onPress={() => handleGoalChange(60)}>
+      <TouchableOpacity
+        style={[styles.goalOption, selectedGoal === 60 && styles.selectedGoalOption]}
+        onPress={() => handleGoalChange(60)}
+      >
+        <View style={[styles.selector, selectedGoal === 60 && styles.selectedSelector]} />
         <Text style={styles.goalOptionTitle}>Serious</Text>
         <Text style={styles.goalOptionSubtitle}>Making progress very quickly</Text>
         <Text style={styles.goalOptionValue}>60 min/day</Text>
@@ -298,5 +319,29 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    padding: 10,
+  },
+  closeButtonText: {
+    fontSize: 24,
+    fontWeight: "bold",
+  },
+  selector: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "gray",
+    marginRight: 10,
+  },
+  selectedSelector: {
+    backgroundColor: "orange",
+  },
+  selectedGoalOption: {
+    backgroundColor: "lightgray",
   },
 });
