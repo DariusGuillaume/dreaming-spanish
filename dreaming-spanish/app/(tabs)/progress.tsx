@@ -23,20 +23,22 @@ const Page = () => {
       <Text style={styles.heading}>Progress</Text>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Daily goal</Text>
-        <ProgressCircle
-          progress={(0 / dailyGoal) * 100}
-          size={150}
-          strokeWidth={15}
-          color="#FF6400"
-        />
-        <Text style={styles.goalText}>
-          0/{dailyGoal}min
-        </Text>
-        <TouchableOpacity style={styles.changeButton}>
-          <Text style={styles.changeButtonText}>Change</Text>
-        </TouchableOpacity>
-      </View>
+  <Text style={styles.sectionTitle}>Daily goal</Text>
+  <ProgressCircle
+  current={12}
+  total={dailyGoal}
+  size={150}
+  strokeWidth={15}
+  color="#FF6400"
+  icon="flag"
+/>
+  <Text style={styles.goalText}>
+    0/{dailyGoal}min
+  </Text>
+  <TouchableOpacity style={styles.changeButton}>
+    <Text style={styles.changeButtonText}>Change</Text>
+  </TouchableOpacity>
+</View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Overall progression</Text>
