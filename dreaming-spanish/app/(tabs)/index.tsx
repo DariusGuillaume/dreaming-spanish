@@ -2,6 +2,7 @@ import { StyleSheet, Text, TouchableOpacity, View, Image, FlatList } from "react
 import React, { useEffect, useState } from "react";
 import { Stack } from "expo-router";
 import axios from "axios";
+import { Ionicons } from '@expo/vector-icons';
 
 interface Video {
   id: string;
@@ -102,7 +103,29 @@ const Page = () => {
           contentContainerStyle={styles.videoList}
         />
       </Stack.Screen>
-      <Text style={styles.categoriesTitle}>Categories</Text>
+      <View style={styles.categoriesContainer}>
+        <View style={styles.bubbleContainer}>
+          <TouchableOpacity style={styles.bubble}>
+            <Ionicons name="fitness" size={20} color="#FF6400" />
+            <Text style={styles.bubbleText}>Super Beg.</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.bubble}>
+            <Ionicons name="body" size={20} color="#FF6400" />
+            <Text style={styles.bubbleText}>Beginner</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.bubble}>
+            <Ionicons name="barbell" size={20} color="#FF6400" />
+            <Text style={styles.bubbleText}>Interm.</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.bubble}>
+            <Ionicons name="trophy" size={20} color="#FF6400" />
+            <Text style={styles.bubbleText}>Advanced</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.optionsBubble}>
+            <Ionicons name="options" size={32} color="#000000" />
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 };
@@ -133,7 +156,6 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 10,
   },
-
   progressTextContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -179,10 +201,37 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginTop: 8,
   },
-  categoriesTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginTop: -375, // Increase the marginTop value to provide more spacing
-   
+  categoriesContainer: {
+    alignItems: 'center',
+    marginTop: -100,
+  },
+  bubbleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 8,
+  },
+  bubble: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#E0E0E0',
+    borderRadius: 30,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    width: 70,
+  },
+  bubbleText: {
+    fontSize: 10,
+    marginTop: 4,
+    textAlign: 'center',
+  },
+  optionsBubble: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FF6400',
+    borderRadius: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 8,
+    width: 50,
   },
 });
