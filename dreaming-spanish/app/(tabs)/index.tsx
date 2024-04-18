@@ -77,9 +77,14 @@ const Page = () => {
                   <Text style={styles.progressText}>
                     Watched: <Text style={styles.boldText}>{minutesWatched} min</Text>
                   </Text>
-                  <Text style={styles.progressText}>
-                    Daily goal: <Text style={styles.boldText}>{maxDailyGoal} min</Text>
-                  </Text>
+                  <View style={styles.dailyGoalContainer}>
+                    <Text style={styles.progressText}>
+                      Daily goal: <Text style={styles.boldText}>{maxDailyGoal} min</Text>
+                    </Text>
+                    <TouchableOpacity onPress={() => console.log("Edit daily goal clicked")}>
+                      <Ionicons name="pencil" size={16} color="#FF6400" style={styles.pencilIcon} />
+                    </TouchableOpacity>
+                  </View>
                 </View>
                 <View style={styles.progressBarContainer}>
                   <View style={styles.progressBar}>
@@ -155,6 +160,13 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 10,
+  },
+  dailyGoalContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  pencilIcon: {
+    marginLeft: 5,
   },
   progressTextContainer: {
     flexDirection: "row",
