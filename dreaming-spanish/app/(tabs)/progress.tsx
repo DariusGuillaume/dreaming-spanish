@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from "react-native";
+import ProgressCircle from "../ProgressCircle";
 
 const Page = () => {
   const dailyGoal = 60;
@@ -23,6 +24,12 @@ const Page = () => {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Daily goal</Text>
+        <ProgressCircle
+          progress={(0 / dailyGoal) * 100}
+          size={150}
+          strokeWidth={15}
+          color="#FF6400"
+        />
         <Text style={styles.goalText}>
           0/{dailyGoal}min
         </Text>
