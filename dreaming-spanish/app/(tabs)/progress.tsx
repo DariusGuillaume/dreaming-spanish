@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, TextInput, Alert } from "react-native";
 import ProgressCircle from "../ProgressCircle";
 import { Feather } from '@expo/vector-icons';
@@ -19,78 +19,100 @@ interface GoalMenuProps {
 const GoalMenu: React.FC<GoalMenuProps> = ({ visible, onClose, onGoalChange }) => {
   const [customGoal, setCustomGoal] = useState("");
   const [selectedGoal, setSelectedGoal] = useState(0);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   if (!visible) return null;
 
-  const handleGoalChange = (goal: number) => {
-    if (goal === 0) {
-      Alert.alert("Error", "Please add a valid goal above 0.");
+  const handleGoalChange = () => {
+    const goal = selectedGoal > 0 ? selectedGoal : parseInt(customGoal);
+
+    if (isNaN(goal) || goal <= 0) {
+      Alert.alert("Error", "Please select a goal or enter a valid custom goal.");
       return;
     }
     if (goal > 1440) {
       Alert.alert("Error", "The goal cannot exceed the number of minutes in a day (1440 minutes).");
       return;
     }
-    setSelectedGoal(goal);
     onGoalChange(goal);
+    onClose();
+  };
+
+  const handleClose = () => {
+    setSelectedGoal(0);
+    setCustomGoal("");
     onClose();
   };
 
   return (
     <View style={styles.goalMenu}>
-      <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-        <Text style={styles.closeButtonText}>×</Text>
+      <TouchableOpacity style={styles.backButton} onPress={handleClose}>
+        <Feather name="arrow-left" size={24} color="#999" />
       </TouchableOpacity>
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.black }]}>Select a goal</Text>
-        <View style={styles.sectionBody}>
+      <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollContent}>
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.black }]}>Select a goal</Text>
           <TouchableOpacity
             style={[styles.goalOption, selectedGoal === 15 && styles.selectedGoalOption]}
-            onPress={() => handleGoalChange(15)}
+            onPress={() => setSelectedGoal(15)}
           >
             <View style={[styles.selector, selectedGoal === 15 && styles.selectedSelector]} />
-            <Text style={styles.goalOptionTitle}>Casual</Text>
-            <Text style={styles.goalOptionSubtitle}>Keeping your skills fresh</Text>
+            <View style={styles.goalOptionTextContainer}>
+              <Text style={styles.goalOptionTitle}>Casual</Text>
+              <Text style={styles.goalOptionSubtitle}>Keeping your skills fresh</Text>
+            </View>
             <Text style={styles.goalOptionValue}>15 min/day</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.goalOption, selectedGoal === 30 && styles.selectedGoalOption]}
-            onPress={() => handleGoalChange(30)}
+            onPress={() => setSelectedGoal(30)}
           >
             <View style={[styles.selector, selectedGoal === 30 && styles.selectedSelector]} />
-            <Text style={styles.goalOptionTitle}>Learner</Text>
-            <Text style={styles.goalOptionSubtitle}>Making progress every day</Text>
+            <View style={styles.goalOptionTextContainer}>
+              <Text style={styles.goalOptionTitle}>Learner</Text>
+              <Text style={styles.goalOptionSubtitle}>Making progress every day</Text>
+            </View>
             <Text style={styles.goalOptionValue}>30 min/day</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.goalOption, selectedGoal === 60 && styles.selectedGoalOption]}
-            onPress={() => handleGoalChange(60)}
+            onPress={() => setSelectedGoal(60)}
           >
             <View style={[styles.selector, selectedGoal === 60 && styles.selectedSelector]} />
-            <Text style={styles.goalOptionTitle}>Serious</Text>
-            <Text style={styles.goalOptionSubtitle}>Making progress very quickly</Text>
+            <View style={styles.goalOptionTextContainer}>
+              <Text style={styles.goalOptionTitle}>Serious</Text>
+              <Text style={styles.goalOptionSubtitle}>Making progress very quickly</Text>
+            </View>
             <Text style={styles.goalOptionValue}>60 min/day</Text>
           </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.black }]}>Custom goal</Text>
-        <View style={styles.sectionBody}>
-          <TextInput
-            style={styles.goalInput}
-            value={customGoal}
-            onChangeText={setCustomGoal}
-            keyboardType="numeric"
-            placeholder="Enter your goal in minutes"
-          />
           <TouchableOpacity
-            style={styles.setGoalButton}
-            onPress={() => handleGoalChange(parseInt(customGoal))}
+            style={[styles.goalOption, selectedGoal === -1 && styles.selectedGoalOption]}
+            onPress={() => setSelectedGoal(-1)}
           >
-            <Text style={styles.setGoalButtonText}>Set Goal</Text>
+            <View style={[styles.selector, selectedGoal === -1 && styles.selectedSelector]} />
+            <View style={styles.goalOptionTextContainer}>
+              <Text style={styles.goalOptionTitle}>Choose your own goal</Text>
+              <Text style={styles.goalOptionSubtitle}>Write your goal in minutes</Text>
+              <View style={styles.customGoalContainer}>
+                <TextInput
+                  style={styles.customGoalInput}
+                  value={customGoal}
+                  onChangeText={setCustomGoal}
+                  keyboardType="numeric"
+                  placeholder="Enter goal"
+                />
+                <Text style={styles.customGoalUnit}>min/day</Text>
+              </View>
+            </View>
           </TouchableOpacity>
         </View>
-      </View>
+        <TouchableOpacity
+          style={styles.setGoalButton}
+          onPress={handleGoalChange}
+        >
+          <Text style={styles.setGoalButtonText}>Set Goal</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </View>
   );
 };
@@ -245,7 +267,7 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
   },
   sectionBody: {
-    paddingLeft: 24,
+    paddingHorizontal: 24,
     backgroundColor: colors.white,
     borderTopWidth: 1,
     borderBottomWidth: 1,
@@ -331,6 +353,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignSelf: "center",
     marginTop: 24,
+    marginBottom: 24,
   },
   learnMoreButtonText: {
     color: colors.white,
@@ -344,7 +367,11 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: colors.white,
-    padding: 24,
+    paddingTop: 60,
+    paddingHorizontal: 24,
+  },
+  scrollContent: {
+    paddingBottom: 24,
   },
   goalOption: {
     flexDirection: "row",
@@ -354,29 +381,40 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 12,
   },
+  goalOptionTextContainer: {
+    flex: 1,
+    marginLeft: 12,
+  },
   goalOptionTitle: {
     fontSize: 17,
     fontWeight: "600",
-    marginLeft: 12,
+    marginBottom: 4,
   },
   goalOptionSubtitle: {
     fontSize: 14,
     color: "#666",
-    marginLeft: 12,
   },
   goalOptionValue: {
     fontSize: 16,
     fontWeight: "bold",
-    marginLeft: "auto",
   },
-  goalInput: {
+  customGoalContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 8,
+  },
+  customGoalInput: {
     height: 40,
     borderColor: "#e3e3e3",
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 12,
-    marginBottom: 16,
-    width: "100%",
+    marginRight: 8,
+    flex: 1,
+  },
+  customGoalUnit: {
+    fontSize: 16,
+    fontWeight: "bold",
   },
   setGoalButton: {
     backgroundColor: colors.primary,
@@ -384,22 +422,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 12,
     alignSelf: "center",
+    marginTop: 24,
   },
   setGoalButtonText: {
     color: colors.white,
     fontSize: 16,
     fontWeight: "bold",
   },
-  closeButton: {
+  backButton: {
     position: "absolute",
     top: 16,
-    right: 16,
+    left: 16,
     padding: 8,
-  },
-  closeButtonText: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#999",
+    zIndex: 1,
   },
   selector: {
     width: 20,
@@ -410,10 +445,10 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   selectedSelector: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+  backgroundColor: colors.primary,
+  borderColor: colors.primary,
   },
   selectedGoalOption: {
-    backgroundColor: "#f0f0f0",
+  backgroundColor: "#f0f0f0",
   },
-});
+  });
