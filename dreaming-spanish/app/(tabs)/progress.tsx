@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, TextInput, Alert } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView, TextInput, Alert, Linking } from "react-native";
 import ProgressCircle from "../ProgressCircle";
 import { Feather } from '@expo/vector-icons';
 
@@ -137,6 +137,25 @@ const Page = () => {
     setDailyGoal(goal);
   };
 
+  const handleLearnMorePress = () => {
+    Alert.alert(
+      'Leave App',
+      'Do you want to leave the app and learn more about our method?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: () => Linking.openURL('https://www.dreamingspanish.com/method'),
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+
   return (
     <ScrollView style={styles.container}>
     <View style={styles.header}>
@@ -164,10 +183,16 @@ const Page = () => {
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: colors.black }]}>Overall progression</Text>
         <View style={styles.sectionBody}>
-          <Text style={styles.levelText}>You are currently in</Text>
-          <Text style={styles.levelValue}>Level {currentLevel}</Text>
-          <View style={styles.progressBar}>
-            <View style={[styles.progressFill, { width: `${(totalInputTime / 50) * 100}%` }]} />
+          <View style={styles.progressBarContainer}>
+            {[...Array(7)].map((_, index) => {
+              const level = index + 1;
+              return (
+                <View key={level} style={[styles.progressBarLevel, { height: `${(100 / 7) * level}%` }]}>
+                  <View style={[styles.progressBarFill, { backgroundColor: currentLevel >= level ? colors.primary : "#E0E0E0" }]} />
+                  <Text style={styles.progressBarLevelLabel}>Level {level}</Text>
+                </View>
+              );
+            })}
           </View>
           <Text style={styles.progressText}>
             Total input time: {totalInputTime} hrs
@@ -220,10 +245,9 @@ const Page = () => {
         </View>
       </View>
 
-      <TouchableOpacity style={styles.learnMoreButton}>
-        <Text style={styles.learnMoreButtonText}>Learn more about our method</Text>
-      </TouchableOpacity>
-
+      <TouchableOpacity style={styles.learnMoreButton} onPress={handleLearnMorePress}>
+  <Text style={styles.learnMoreButtonText}>Learn more about our method</Text>
+</TouchableOpacity>
       <GoalMenu visible={isMenuVisible} onClose={toggleMenu} onGoalChange={handleGoalChange} />
     </ScrollView>
   );
@@ -288,28 +312,6 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: 15,
     fontWeight: "600",
-  },
-  levelText: {
-    fontSize: 17,
-    fontWeight: "500",
-    marginBottom: 5,
-  },
-  levelValue: {
-    fontSize: 20,
-    fontWeight: "700",
-    marginBottom: 10,
-  },
-  progressBar: {
-    height: 10,
-    backgroundColor: "#E0E0E0",
-    borderRadius: 5,
-    marginBottom: 10,
-    width: "80%",
-  },
-  progressFill: {
-    height: "100%",
-    backgroundColor: colors.primary,
-    borderRadius: 5,
   },
   progressText: {
     fontSize: 15,
@@ -442,10 +444,37 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   selectedSelector: {
-  backgroundColor: colors.primary,
-  borderColor: colors.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   selectedGoalOption: {
-  backgroundColor: "#f0f0f0",
+    backgroundColor: "#f0f0f0",
+  },
+  progressBarContainer: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
+    width: "100%",
+    height: 200,
+    marginBottom: 16,
+  },
+  progressBarLevel: {
+    flex: 1,
+    alignItems: "center",
+    marginHorizontal: 4,
+  },
+  progressBarFill: {
+  width: "100%",
+  backgroundColor: "#E0E0E0",
+  borderTopLeftRadius: 5,
+  borderTopRightRadius: 5,
+  height: "100%",
+  },
+  progressBarLevelLabel: {
+  fontSize: 12,
+  fontWeight: "500",
+  marginTop: 4,
+  position: "absolute",
+  bottom: -20,
   },
   });
