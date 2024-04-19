@@ -19,7 +19,6 @@ interface GoalMenuProps {
 const GoalMenu: React.FC<GoalMenuProps> = ({ visible, onClose, onGoalChange }) => {
   const [customGoal, setCustomGoal] = useState("");
   const [selectedGoal, setSelectedGoal] = useState(0);
-  const scrollViewRef = useRef<ScrollView>(null);
 
   if (!visible) return null;
 
@@ -49,7 +48,7 @@ const GoalMenu: React.FC<GoalMenuProps> = ({ visible, onClose, onGoalChange }) =
       <TouchableOpacity style={styles.backButton} onPress={handleClose}>
         <Feather name="arrow-left" size={24} color="#999" />
       </TouchableOpacity>
-      <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollContent}>
+      <View style={styles.scrollContent}>
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.black }]}>Select a goal</Text>
           <TouchableOpacity
@@ -112,7 +111,7 @@ const GoalMenu: React.FC<GoalMenuProps> = ({ visible, onClose, onGoalChange }) =
         >
           <Text style={styles.setGoalButtonText}>Set Goal</Text>
         </TouchableOpacity>
-      </ScrollView>
+      </View>
     </View>
   );
 };
@@ -139,14 +138,10 @@ const Page = () => {
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      scrollEnabled={true}
-      keyboardShouldPersistTaps="handled"
-    >
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.black }]}>Progress</Text>
-      </View>
+    <ScrollView style={styles.container}>
+    <View style={styles.header}>
+      <Text style={[styles.title, { color: colors.black }]}>Progress</Text>
+    </View>
 
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: colors.black }]}>Daily goal</Text>
@@ -236,13 +231,13 @@ const Page = () => {
 
 export default Page;
 
+
+
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     paddingVertical: 24,
     paddingHorizontal: 0,
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
     backgroundColor: colors.bg,
   },
   header: {
@@ -288,6 +283,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     marginTop: 12,
   },
+
   changeButtonText: {
     color: colors.white,
     fontSize: 15,
@@ -371,6 +367,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   scrollContent: {
+    flex: 1,
     paddingBottom: 24,
   },
   goalOption: {
