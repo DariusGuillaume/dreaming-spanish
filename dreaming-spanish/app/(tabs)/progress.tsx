@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, TextInput, Alert } from "react-native";
 import ProgressCircle from "../ProgressCircle";
+import { Feather } from '@expo/vector-icons';
+
+const colors = {
+  primary: '#FF7F36',
+  bg: '#F4F4F4',
+  black: '#27283a',
+  white: '#FFFFFF',
+};
 
 interface GoalMenuProps {
   visible: boolean;
@@ -103,73 +111,85 @@ const Page = () => {
       scrollEnabled={true}
       keyboardShouldPersistTaps="handled"
     >
-      <Text style={styles.heading}>Progress</Text>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Daily goal</Text>
-        <ProgressCircle
-          current={12}
-          total={dailyGoal}
-          size={150}
-          strokeWidth={15}
-          color="#FF6400"
-          icon="flag"
-        />
-        <Text style={styles.goalText}>12/{dailyGoal} min</Text>
-        <TouchableOpacity style={styles.changeButton} onPress={toggleMenu}>
-          <Text style={styles.changeButtonText}>Change</Text>
-        </TouchableOpacity>
+      <View style={styles.header}>
+        <Text style={[styles.title, { color: colors.black }]}>Progress</Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Overall progression</Text>
-        <Text style={styles.levelText}>You are currently in</Text>
-        <Text style={styles.levelValue}>Level {currentLevel}</Text>
-        <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: `${(totalInputTime / 50) * 100}%` }]} />
+        <Text style={[styles.sectionTitle, { color: colors.black }]}>Daily goal</Text>
+        <View style={styles.sectionBody}>
+          <ProgressCircle
+            current={12}
+            total={dailyGoal}
+            size={150}
+            strokeWidth={15}
+            color={colors.primary}
+            icon="flag"
+          />
+          <Text style={styles.goalText}>12/{dailyGoal} min</Text>
+          <TouchableOpacity style={styles.changeButton} onPress={toggleMenu}>
+            <Text style={styles.changeButtonText}>Change</Text>
+          </TouchableOpacity>
         </View>
-        <Text style={styles.progressText}>
-          Total input time: {totalInputTime} hrs
-        </Text>
-        <Text style={styles.progressText}>
-          Hours to level {currentLevel + 1}: {hoursToNextLevel} hrs
-        </Text>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Outside hours</Text>
-        <Text style={styles.outsideHoursText}>{outsideHours} hours outside the platform</Text>
-        <TouchableOpacity style={styles.outsideHoursButton}>
-          <Text style={styles.outsideHoursButtonText}>View hours outside the platform</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.outsideHoursButton}>
-          <Text style={styles.outsideHoursButtonText}>Add hours outside the platform</Text>
-        </TouchableOpacity>
+        <Text style={[styles.sectionTitle, { color: colors.black }]}>Overall progression</Text>
+        <View style={styles.sectionBody}>
+          <Text style={styles.levelText}>You are currently in</Text>
+          <Text style={styles.levelValue}>Level {currentLevel}</Text>
+          <View style={styles.progressBar}>
+            <View style={[styles.progressFill, { width: `${(totalInputTime / 50) * 100}%` }]} />
+          </View>
+          <Text style={styles.progressText}>
+            Total input time: {totalInputTime} hrs
+          </Text>
+          <Text style={styles.progressText}>
+            Hours to level {currentLevel + 1}: {hoursToNextLevel} hrs
+          </Text>
+        </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Your activity</Text>
-        <Text style={styles.activityText}>Current streak: {currentStreak}</Text>
-        <Text style={styles.activityText}>
-          Reach a max streak of 7 by practicing every day.
-        </Text>
-        <Text style={styles.activityText}>
-          {currentStreak}/7
-        </Text>
-        <Text style={styles.activityText}>Weeks in a row: {weeksInARow}</Text>
+        <Text style={[styles.sectionTitle, { color: colors.black }]}>Outside hours</Text>
+        <View style={styles.sectionBody}>
+          <Text style={styles.outsideHoursText}>{outsideHours} hours outside the platform</Text>
+          <TouchableOpacity style={styles.outsideHoursButton}>
+            <Text style={styles.outsideHoursButtonText}>View hours outside the platform</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.outsideHoursButton}>
+            <Text style={styles.outsideHoursButtonText}>Add hours outside the platform</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Statistics</Text>
-        <Text style={styles.statisticText}>
-          {hoursWatched} hours watched
-        </Text>
-        <Text style={styles.statisticText}>
-          {videosWatched} watched videos
-        </Text>
-        <Text style={styles.statisticText}>
-          {daysPracticed} days you practiced
-        </Text>
+        <Text style={[styles.sectionTitle, { color: colors.black }]}>Your activity</Text>
+        <View style={styles.sectionBody}>
+          <Text style={styles.activityText}>Current streak: {currentStreak}</Text>
+          <Text style={styles.activityText}>
+            Reach a max streak of 7 by practicing every day.
+          </Text>
+          <Text style={styles.activityText}>
+            {currentStreak}/7
+          </Text>
+          <Text style={styles.activityText}>Weeks in a row: {weeksInARow}</Text>
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={[styles.sectionTitle, { color: colors.black }]}>Statistics</Text>
+        <View style={styles.sectionBody}>
+          <Text style={styles.statisticText}>
+            {hoursWatched} hours watched
+          </Text>
+          <Text style={styles.statisticText}>
+            {videosWatched} watched videos
+          </Text>
+          <Text style={styles.statisticText}>
+            {daysPracticed} days you practiced
+          </Text>
+        </View>
       </View>
 
       <TouchableOpacity style={styles.learnMoreButton}>
@@ -185,45 +205,69 @@ export default Page;
 
 const styles = StyleSheet.create({
   container: {
+    paddingVertical: 24,
+    paddingHorizontal: 0,
     flexGrow: 1,
-    padding: 20,
-    backgroundColor: "#F5FCFF",
+    flexShrink: 1,
+    flexBasis: 0,
+    backgroundColor: colors.bg,
   },
-  heading: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
+  header: {
+    paddingLeft: 24,
+    paddingRight: 24,
+    marginBottom: 12,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: '700',
+    marginBottom: 6,
   },
   section: {
-    marginBottom: 20,
+    paddingTop: 12,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
+    marginVertical: 8,
+    marginHorizontal: 24,
+    fontSize: 14,
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 1.2,
+  },
+  sectionBody: {
+    paddingLeft: 24,
+    backgroundColor: colors.white,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: "#e3e3e3",
+    alignItems: "center",
+    paddingVertical: 16,
   },
   goalText: {
-    fontSize: 16,
+    fontSize: 17,
+    fontWeight: "500",
     marginBottom: 5,
   },
   changeButton: {
-    backgroundColor: "#FF6400",
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 5,
+    backgroundColor: colors.primary,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 12,
     alignSelf: "flex-start",
+    marginTop: 12,
   },
   changeButtonText: {
-    color: "#FFFFFF",
-    fontSize: 14,
+    color: colors.white,
+    fontSize: 15,
+    fontWeight: "600",
   },
   levelText: {
-    fontSize: 16,
+    fontSize: 17,
+    fontWeight: "500",
     marginBottom: 5,
   },
   levelValue: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 20,
+    fontWeight: "700",
     marginBottom: 10,
   },
   progressBar: {
@@ -231,50 +275,56 @@ const styles = StyleSheet.create({
     backgroundColor: "#E0E0E0",
     borderRadius: 5,
     marginBottom: 10,
+    width: "80%",
   },
   progressFill: {
     height: "100%",
-    backgroundColor: "#FF6400",
+    backgroundColor: colors.primary,
     borderRadius: 5,
   },
   progressText: {
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: "500",
     marginBottom: 5,
   },
   outsideHoursText: {
-    fontSize: 16,
+    fontSize: 17,
+    fontWeight: "500",
     marginBottom: 10,
   },
   outsideHoursButton: {
     backgroundColor: "#E0E0E0",
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    marginBottom: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    marginBottom: 8,
   },
   outsideHoursButtonText: {
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: "600",
   },
   activityText: {
-    fontSize: 16,
+    fontSize: 17,
+    fontWeight: "500",
     marginBottom: 5,
   },
   statisticText: {
-    fontSize: 16,
+    fontSize: 17,
+    fontWeight: "500",
     marginBottom: 5,
   },
   learnMoreButton: {
-    backgroundColor: "#FF6400",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
+    backgroundColor: colors.primary,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 12,
     alignSelf: "center",
-    marginTop: 20,
+    marginTop: 24,
   },
   learnMoreButtonText: {
-    color: "#FFFFFF",
+    color: colors.white,
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "700",
   },
   goalMenu: {
     position: "absolute",
@@ -309,14 +359,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   setGoalButton: {
-    backgroundColor: "#FF6400",
+    backgroundColor: colors.primary,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderRadius: 5,
+    borderRadius: 12,
     alignSelf: "flex-start",
   },
   setGoalButtonText: {
-    color: "white",
+    color: colors.white,
     fontSize: 16,
     fontWeight: "bold",
   },
@@ -339,9 +389,9 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   selectedSelector: {
-    backgroundColor: "orange",
+    backgroundColor: colors.primary,
   },
   selectedGoalOption: {
-    backgroundColor: "lightgray",
+    backgroundColor: "#F0F0F0",
   },
 });
