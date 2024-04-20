@@ -5,6 +5,8 @@ import { Feather } from '@expo/vector-icons';
 
 const colors = {
   primary: '#FF7F36',
+  secondary: '#FFA07A',
+  accent: '#FFE4B5',
   bg: '#F4F4F4',
   black: '#27283a',
   white: '#FFFFFF',
@@ -119,13 +121,14 @@ const GoalMenu: React.FC<GoalMenuProps> = ({ visible, onClose, onGoalChange }) =
 const Page = () => {
   const [dailyGoal, setDailyGoal] = useState(60);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const currentLevel = 1;
+  const currentLevel = 3;
   const totalInputTime = 8;
   const hoursToNextLevel = 42;
   const outsideHours = 0;
   const currentStreak = 1;
   const weeksInARow = 2;
   const hoursWatched = 7;
+  const maxLevel = 7;
   const videosWatched = 82;
   const daysPracticed = 19;
 
@@ -155,12 +158,11 @@ const Page = () => {
     );
   };
 
-
   return (
     <ScrollView style={styles.container}>
-    <View style={styles.header}>
-      <Text style={[styles.title, { color: colors.black }]}>Progress</Text>
-    </View>
+      <View style={styles.header}>
+        <Text style={[styles.title, { color: colors.black }]}>Progress</Text>
+      </View>
 
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: colors.black }]}>Daily goal</Text>
@@ -180,15 +182,27 @@ const Page = () => {
         </View>
       </View>
 
+     
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: colors.black }]}>Overall progression</Text>
         <View style={styles.sectionBody}>
           <View style={styles.progressBarContainer}>
-            {[...Array(7)].map((_, index) => {
+            {[...Array(maxLevel)].map((_, index) => {
               const level = index + 1;
+              const fillHeight = (100 / maxLevel) * level; // Adjust the fill height based on maxLevel
+              const isFilled = currentLevel >= level;
+
               return (
-                <View key={level} style={[styles.progressBarLevel, { height: `${(100 / 7) * level}%` }]}>
-                  <View style={[styles.progressBarFill, { backgroundColor: currentLevel >= level ? colors.primary : "#E0E0E0" }]} />
+                <View key={level} style={styles.progressBarLevel}>
+                  <View
+                    style={[
+                      styles.progressBarFill,
+                      {
+                        height: `${fillHeight}%`,
+                        backgroundColor: isFilled ? colors.primary : "#E0E0E0",
+                      },
+                    ]}
+                  />
                   <Text style={styles.progressBarLevelLabel}>Level {level}</Text>
                 </View>
               );
@@ -237,7 +251,7 @@ const Page = () => {
             {hoursWatched} hours watched
           </Text>
           <Text style={styles.statisticText}>
-            {videosWatched} watched videos
+            {videosWatched} videos watched
           </Text>
           <Text style={styles.statisticText}>
             {daysPracticed} days you practiced
@@ -246,16 +260,14 @@ const Page = () => {
       </View>
 
       <TouchableOpacity style={styles.learnMoreButton} onPress={handleLearnMorePress}>
-  <Text style={styles.learnMoreButtonText}>Learn more about our method</Text>
-</TouchableOpacity>
+        <Text style={styles.learnMoreButtonText}>Learn more about our method</Text>
+      </TouchableOpacity>
       <GoalMenu visible={isMenuVisible} onClose={toggleMenu} onGoalChange={handleGoalChange} />
     </ScrollView>
   );
-};
+ };
 
 export default Page;
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -276,86 +288,98 @@ const styles = StyleSheet.create({
   },
   section: {
     paddingTop: 12,
+    paddingHorizontal: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e3e3e3",
   },
   sectionTitle: {
     marginVertical: 8,
-    marginHorizontal: 24,
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: "600",
     textTransform: "uppercase",
     letterSpacing: 1.2,
   },
   sectionBody: {
-    paddingHorizontal: 24,
     backgroundColor: colors.white,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: "#e3e3e3",
-    alignItems: "center",
-    paddingVertical: 16,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   goalText: {
-    fontSize: 17,
-    fontWeight: "500",
-    marginBottom: 5,
+    fontSize: 24,
+    fontWeight: "600",
+    marginBottom: 8,
+    color: colors.black,
   },
   changeButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    alignSelf: "flex-start",
-    marginTop: 12,
+    backgroundColor: colors.secondary,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 24,
+    alignSelf: "center",
+    marginTop: 20,
   },
-
   changeButtonText: {
     color: colors.white,
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "600",
   },
   progressText: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "500",
-    marginBottom: 5,
+    marginBottom: 8,
+    color: colors.black,
   },
   outsideHoursText: {
-    fontSize: 17,
-    fontWeight: "500",
-    marginBottom: 10,
+    fontSize: 20,
+    fontWeight: "600",
+    marginBottom: 12,
+    color: colors.black,
   },
   outsideHoursButton: {
-    backgroundColor: "#E0E0E0",
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-    marginBottom: 8,
+    backgroundColor: colors.accent,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 24,
+    marginBottom: 12,
   },
   outsideHoursButtonText: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "600",
+    color: colors.black,
   },
   activityText: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: "500",
-    marginBottom: 5,
+    marginBottom: 8,
+    color: colors.black,
   },
   statisticText: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: "500",
-    marginBottom: 5,
+    marginBottom: 8,
+    color: colors.black,
   },
   learnMoreButton: {
     backgroundColor: colors.primary,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 32,
     alignSelf: "center",
     marginTop: 24,
-    marginBottom: 24,
+    marginBottom: 32,
   },
   learnMoreButtonText: {
     color: colors.white,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "700",
   },
   goalMenu: {
@@ -422,33 +446,34 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignSelf: "center",
     marginTop: 24,
+
   },
   setGoalButtonText: {
-    color: colors.white,
-    fontSize: 16,
-    fontWeight: "bold",
+  color: colors.white,
+  fontSize: 16,
+  fontWeight: "bold",
   },
   backButton: {
-    position: "absolute",
-    top: 16,
-    left: 16,
-    padding: 8,
-    zIndex: 1,
+  position: "absolute",
+  top: 16,
+  left: 16,
+  padding: 8,
+  zIndex: 1,
   },
   selector: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    marginRight: 12,
+  width: 20,
+  height: 20,
+  borderRadius: 10,
+  borderWidth: 1,
+  borderColor: "#ccc",
+  marginRight: 12,
   },
   selectedSelector: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+  backgroundColor: colors.primary,
+  borderColor: colors.primary,
   },
   selectedGoalOption: {
-    backgroundColor: "#f0f0f0",
+  backgroundColor: "#f0f0f0",
   },
   progressBarContainer: {
     flexDirection: "row",
@@ -456,25 +481,23 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     height: 200,
-    marginBottom: 16,
+    marginBottom: 24,
   },
   progressBarLevel: {
-    flex: 1,
-    alignItems: "center",
-    marginHorizontal: 4,
+  flex: 1,
+  alignItems: "center",
+  justifyContent: "flex-end",
   },
   progressBarFill: {
-  width: "100%",
-  backgroundColor: "#E0E0E0",
-  borderTopLeftRadius: 5,
-  borderTopRightRadius: 5,
-  height: "100%",
+    width: '60%',
+    height: '100%', // Adjust the height to a percentage or a fixed value
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
   },
   progressBarLevelLabel: {
-  fontSize: 12,
-  fontWeight: "500",
-  marginTop: 4,
-  position: "absolute",
-  bottom: -20,
+  fontSize: 14,
+  fontWeight: "600",
+  marginTop: 8,
+  color: colors.black,
   },
   });
