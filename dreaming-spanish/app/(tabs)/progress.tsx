@@ -121,9 +121,7 @@ const GoalMenu: React.FC<GoalMenuProps> = ({ visible, onClose, onGoalChange }) =
 const Page = () => {
   const [dailyGoal, setDailyGoal] = useState(60);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const currentLevel = 3;
-  const totalInputTime = 8;
-  const hoursToNextLevel = 42;
+  const totalInputTime = 1000;
   const outsideHours = 0;
   const currentStreak = 1;
   const weeksInARow = 2;
@@ -131,6 +129,29 @@ const Page = () => {
   const maxLevel = 7;
   const videosWatched = 82;
   const daysPracticed = 19;
+
+  const inputHoursPerLevel = [0, 50, 150, 300, 600, 1000, 1500];
+
+  const getCurrentLevel = () => {
+    let currentLevel = 1;
+    for (let i = 1; i < inputHoursPerLevel.length; i++) {
+      if (totalInputTime < inputHoursPerLevel[i]) {
+        break;
+      }
+      currentLevel = i + 1;
+    }
+    return currentLevel;
+  };
+
+  const currentLevel = getCurrentLevel();
+
+  const getHoursToNextLevel = () => {
+    const nextLevel = currentLevel;
+    const hoursToNextLevel = inputHoursPerLevel[nextLevel] - totalInputTime;
+    return hoursToNextLevel >= 0 ? hoursToNextLevel : 0;
+  };
+
+  const hoursToNextLevel = getHoursToNextLevel();
 
   const toggleMenu = () => {
     setIsMenuVisible(!isMenuVisible);
@@ -175,21 +196,20 @@ const Page = () => {
             color={colors.primary}
             icon="flag"
           />
-          <Text style={styles.goalText}>12/{dailyGoal} min</Text>
+          <Text style={styles.dailyGoalText}>{`${12}/${dailyGoal}`}</Text>
           <TouchableOpacity style={styles.changeButton} onPress={toggleMenu}>
             <Text style={styles.changeButtonText}>Change Goal</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-     
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: colors.black }]}>Overall progression</Text>
         <View style={styles.sectionBody}>
           <View style={styles.progressBarContainer}>
             {[...Array(maxLevel)].map((_, index) => {
               const level = index + 1;
-              const fillHeight = (100 / maxLevel) * level; // Adjust the fill height based on maxLevel
+              const fillHeight = (100 / maxLevel) * level;
               const isFilled = currentLevel >= level;
 
               return (
@@ -208,9 +228,19 @@ const Page = () => {
               );
             })}
           </View>
-          <Text style={styles.progressText}>
-            Total input time: {totalInputTime} hrs
-          </Text>
+          <View style={styles.inputTimeContainer}>
+            <View style={styles.inputTimeBar}>
+              <View
+                style={[
+                  styles.inputTimeFill,
+                  {
+                    width: `${(totalInputTime / inputHoursPerLevel[maxLevel - 1]) * 100}%`,
+                  },
+                ]}
+              />
+            </View>
+            <Text style={styles.inputTimeText}>{totalInputTime} hrs</Text>
+          </View>
           <Text style={styles.progressText}>
             Hours to level {currentLevel + 1}: {hoursToNextLevel} hrs
           </Text>
@@ -265,8 +295,7 @@ const Page = () => {
       <GoalMenu visible={isMenuVisible} onClose={toggleMenu} onGoalChange={handleGoalChange} />
     </ScrollView>
   );
- };
-
+};
 export default Page;
 
 const styles = StyleSheet.create({
@@ -435,70 +464,101 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginRight: 8,
     flex: 1,
-  },
-  customGoalUnit: {
+    },
+    customGoalUnit: {
     fontSize: 16,
     fontWeight: "bold",
-  },
-  setGoalButton: {
+    },
+    setGoalButton: {
     backgroundColor: colors.primary,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 12,
     alignSelf: "center",
     marginTop: 24,
-
-  },
-  setGoalButtonText: {
-  color: colors.white,
-  fontSize: 16,
-  fontWeight: "bold",
-  },
-  backButton: {
-  position: "absolute",
-  top: 16,
-  left: 16,
-  padding: 8,
-  zIndex: 1,
-  },
-  selector: {
-  width: 20,
-  height: 20,
-  borderRadius: 10,
-  borderWidth: 1,
-  borderColor: "#ccc",
-  marginRight: 12,
-  },
-  selectedSelector: {
-  backgroundColor: colors.primary,
-  borderColor: colors.primary,
-  },
-  selectedGoalOption: {
-  backgroundColor: "#f0f0f0",
-  },
-  progressBarContainer: {
+    },
+    setGoalButtonText: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: "bold",
+    },
+    backButton: {
+    position: "absolute",
+    top: 16,
+    left: 16,
+    padding: 8,
+    zIndex: 1,
+    },
+    selector: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    marginRight: 12,
+    },
+    selectedSelector: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+    },
+    selectedGoalOption: {
+    backgroundColor: "#f0f0f0",
+    },
+    progressBarContainer: {
     flexDirection: "row",
     alignItems: "flex-end",
     justifyContent: "space-between",
     width: "100%",
     height: 200,
     marginBottom: 24,
-  },
-  progressBarLevel: {
-  flex: 1,
-  alignItems: "center",
-  justifyContent: "flex-end",
-  },
-  progressBarFill: {
+    },
+    progressBarLevel: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "flex-end",
+    },
+    progressBarFill: {
     width: '60%',
-    height: '100%', // Adjust the height to a percentage or a fixed value
+    height: '100%',
     borderTopLeftRadius: 8,
     borderTopRightRadius: 8,
-  },
-  progressBarLevelLabel: {
-  fontSize: 14,
-  fontWeight: "600",
-  marginTop: 8,
-  color: colors.black,
-  },
-  });
+    },
+    progressBarLevelLabel: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginTop: 8,
+    color: colors.black,
+    },
+    inputTimeContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 12,
+    },
+    inputTimeBar: {
+    flex: 1,
+    height: 10,
+    backgroundColor: "#E0E0E0",
+    borderRadius: 5,
+    marginRight: 12,
+    },
+    inputTimeFill: {
+    height: "100%",
+    backgroundColor: colors.primary,
+    borderRadius: 5,
+    },
+    inputTimeText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: colors.black,
+    },
+    dailyGoalText: {
+      fontSize: 18,
+      fontWeight: "bold",
+      color: colors.black,
+      marginTop: 10,
+      textAlign: "center",
+    },
+      
+     
+    });
+    
