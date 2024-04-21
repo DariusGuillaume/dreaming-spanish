@@ -1,7 +1,9 @@
 import React, { useState, useRef } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, TextInput, Alert, Linking } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Dimensions, ScrollView, TextInput, Alert, Linking,PixelRatio } from "react-native";
 import ProgressCircle from "../ProgressCircle";
 import { Feather } from '@expo/vector-icons';
+
+const {width : SCREEN_WIDTH} = Dimensions.get('window');
 
 const colors = {
   primary: '#FF7F36',
@@ -121,7 +123,7 @@ const GoalMenu: React.FC<GoalMenuProps> = ({ visible, onClose, onGoalChange }) =
 const Page = () => {
   const [dailyGoal, setDailyGoal] = useState(60);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const totalInputTime = 1000;
+  const totalInputTime = 30;
   const outsideHours = 0;
   const currentStreak = 1;
   const weeksInARow = 2;
@@ -152,6 +154,15 @@ const Page = () => {
   };
 
   const hoursToNextLevel = getHoursToNextLevel();
+
+  const getLevelProgress = () => {
+    const currentLevelMin = inputHoursPerLevel[currentLevel - 1];
+    const currentLevelMax = inputHoursPerLevel[currentLevel];
+    const levelProgress = ((totalInputTime - currentLevelMin) / (currentLevelMax - currentLevelMin)) * 100;
+    return levelProgress.toFixed(2);
+  };
+
+  const levelProgress = getLevelProgress();
 
   const toggleMenu = () => {
     setIsMenuVisible(!isMenuVisible);
@@ -228,19 +239,21 @@ const Page = () => {
               );
             })}
           </View>
+
           <View style={styles.inputTimeContainer}>
             <View style={styles.inputTimeBar}>
               <View
                 style={[
                   styles.inputTimeFill,
                   {
-                    width: `${(totalInputTime / inputHoursPerLevel[maxLevel - 1]) * 100}%`,
+                    width: PixelRatio.roundToNearestPixel(parseFloat(levelProgress) / 100 * SCREEN_WIDTH * 0.8),
                   },
                 ]}
               />
             </View>
             <Text style={styles.inputTimeText}>{totalInputTime} hrs</Text>
           </View>
+
           <Text style={styles.progressText}>
             Hours to level {currentLevel + 1}: {hoursToNextLevel} hrs
           </Text>
@@ -535,11 +548,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     },
     inputTimeBar: {
-    flex: 1,
-    height: 10,
-    backgroundColor: "#E0E0E0",
-    borderRadius: 5,
-    marginRight: 12,
+      flex: 1,
+      height: 10,
+      backgroundColor: "#E0E0E0",
+      borderRadius: 5,
+      marginRight: 12,
+      width: '100%', // Add this line to set a valid width
     },
     inputTimeFill: {
     height: "100%",
