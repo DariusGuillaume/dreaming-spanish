@@ -304,14 +304,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
   },
   goalText: {
     fontSize: 24,
@@ -320,13 +312,22 @@ const styles = StyleSheet.create({
     color: colors.black,
   },
   changeButton: {
-    backgroundColor: colors.secondary,
+    backgroundColor: colors.primary,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 24,
     alignSelf: "center",
     marginTop: 20,
+    shadowColor: 'transparent',
+    shadowOffset: {
+      width: 0,
+      height: 0,
+    },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
   },
+  
   changeButtonText: {
     color: colors.white,
     fontSize: 16,
