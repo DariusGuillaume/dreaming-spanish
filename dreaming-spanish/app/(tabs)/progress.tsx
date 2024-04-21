@@ -123,7 +123,7 @@ const GoalMenu: React.FC<GoalMenuProps> = ({ visible, onClose, onGoalChange }) =
 const Page = () => {
   const [dailyGoal, setDailyGoal] = useState(60);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const totalInputTime = 30;
+  const totalInputTime = 23;
   const outsideHours = 0;
   const currentStreak = 1;
   const weeksInARow = 2;
@@ -142,13 +142,16 @@ const Page = () => {
       }
       currentLevel = i + 1;
     }
-    return currentLevel;
+    return Math.min(currentLevel, maxLevel);
   };
 
   const currentLevel = getCurrentLevel();
 
   const getHoursToNextLevel = () => {
     const nextLevel = currentLevel;
+    if (nextLevel === maxLevel) {
+      return 0;
+    }
     const hoursToNextLevel = inputHoursPerLevel[nextLevel] - totalInputTime;
     return hoursToNextLevel >= 0 ? hoursToNextLevel : 0;
   };
@@ -159,7 +162,7 @@ const Page = () => {
     const currentLevelMin = inputHoursPerLevel[currentLevel - 1];
     const currentLevelMax = inputHoursPerLevel[currentLevel];
     const levelProgress = ((totalInputTime - currentLevelMin) / (currentLevelMax - currentLevelMin)) * 100;
-    return levelProgress.toFixed(2);
+    return Math.min(levelProgress, 100).toFixed(2);
   };
 
   const levelProgress = getLevelProgress();
@@ -171,6 +174,7 @@ const Page = () => {
   const handleGoalChange = (goal: number) => {
     setDailyGoal(goal);
   };
+
 
   const handleLearnMorePress = () => {
     Alert.alert(
@@ -218,6 +222,7 @@ const Page = () => {
         <Text style={[styles.sectionTitle, { color: colors.black }]}>Overall progression</Text>
         <View style={styles.sectionBody}>
           <View style={styles.progressBarContainer}>
+
             {[...Array(maxLevel)].map((_, index) => {
               const level = index + 1;
               const fillHeight = (100 / maxLevel) * level;
@@ -246,7 +251,7 @@ const Page = () => {
                 style={[
                   styles.inputTimeFill,
                   {
-                    width: PixelRatio.roundToNearestPixel(parseFloat(levelProgress) / 100 * SCREEN_WIDTH * 0.8),
+                    width: `${Math.min(parseFloat(levelProgress), 100)}%`,
                   },
                 ]}
               />
@@ -553,7 +558,6 @@ const styles = StyleSheet.create({
       backgroundColor: "#E0E0E0",
       borderRadius: 5,
       marginRight: 12,
-      width: '100%', // Add this line to set a valid width
     },
     inputTimeFill: {
     height: "100%",
